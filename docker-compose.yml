@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  digestarr:
+    build: .
+    container_name: digestarr
+    restart: unless-stopped
+    
+    environment:
+      # Plex Configuration (REQUIRED - Set your Plex server URL)
+      - PLEX_URL=${PLEX_URL:-http://plex:32400}
+      
+      # Scheduling Configuration (Optional - can be configured via Web UI)
+      - DIGEST_SCHEDULE=${DIGEST_SCHEDULE:-0 */6 * * *}
+      - TIMEZONE=${TIMEZONE:-America/New_York}
+      
+      # Feature Flags (Optional)
+      - ENABLE_MOVIES=${ENABLE_MOVIES:-true}
+      - ENABLE_TV_SHOWS=${ENABLE_TV_SHOWS:-true}
+      - ENABLE_MUSIC=${ENABLE_MUSIC:-true}
+      
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      
+      # IMPORTANT: Do NOT put sensitive values here!
+      # PLEX_TOKEN and DISCORD_WEBHOOK_URL should be configured via the Web UI
+      # They will be saved in /data/config.json inside the container
+    
+    ports:
+      - "5667:5667"
+    
+    volumes:
+      # Persistent storage for database and configuration
+      # For Unraid: /mnt/user/appdata/digestarr
+      # For other systems: ./data or your preferred path
+      - ./data:/data
+    
+    networks:
+      - default
+
+networks:
+  default:
+    name: digestarr_network

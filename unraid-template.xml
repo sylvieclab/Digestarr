@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Digestarr</Name>
+  <Repository>montahulu/digestarr:latest</Repository>
+  <Registry>https://hub.docker.com/r/montahulu/digestarr</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/Montahulu/Digestarr</Support>
+  <Project>https://github.com/Montahulu/Digestarr</Project>
+  <Overview>Aggregate Plex webhook notifications into periodic Discord digests. Part of the *arr family.&#xD;
+&#xD;
+IMPORTANT: Configure your Plex server URL below, then complete setup via the Web UI at http://[IP]:5667&#xD;
+&#xD;
+Features:&#xD;
+- Smart media aggregation (TV shows by season, movies, music by artist)&#xD;
+- Configurable scheduling with cron expressions&#xD;
+- Threshold-based auto-send&#xD;
+- Beautiful Discord embeds&#xD;
+- Web UI for easy configuration&#xD;
+- No manual file editing required&#xD;
+</Overview>
+  <Category>MediaApp:Other</Category>
+  <WebUI>http://[IP]:[PORT:5667]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/Montahulu/Digestarr/main/unraid-template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/Montahulu/Digestarr/main/icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled></DateInstalled>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="Web UI Port" Target="5667" Default="5667" Mode="tcp" Description="Port for Web UI and webhook receiver" Type="Port" Display="always" Required="true" Mask="false">5667</Config>
+  <Config Name="AppData" Target="/data" Default="/mnt/user/appdata/digestarr" Mode="rw" Description="Configuration and database storage" Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/digestarr</Config>
+  <Config Name="Plex URL" Target="PLEX_URL" Default="" Mode="" Description="Your Plex server URL (e.g., http://192.168.1.100:32400 or http://plex:32400)" Type="Variable" Display="always" Required="true" Mask="false">http://YOUR_PLEX_IP:32400</Config>
+  <Config Name="Digest Schedule" Target="DIGEST_SCHEDULE" Default="0 */6 * * *" Mode="" Description="Cron schedule for digests (can be changed in Web UI)" Type="Variable" Display="always" Required="false" Mask="false">0 */6 * * *</Config>
+  <Config Name="Timezone" Target="TIMEZONE" Default="America/New_York" Mode="" Description="Timezone for scheduling (can be changed in Web UI)" Type="Variable" Display="always" Required="false" Mask="false">America/New_York</Config>
+  <Config Name="Enable Movies" Target="ENABLE_MOVIES" Default="true" Mode="" Description="Include movies in digests" Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="Enable TV Shows" Target="ENABLE_TV_SHOWS" Default="true" Mode="" Description="Include TV shows in digests" Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="Enable Music" Target="ENABLE_MUSIC" Default="true" Mode="" Description="Include music in digests" Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="Log Level" Target="LOG_LEVEL" Default="INFO" Mode="" Description="Logging level (DEBUG, INFO, WARNING, ERROR)" Type="Variable" Display="advanced" Required="false" Mask="false">INFO</Config>
+</Container>

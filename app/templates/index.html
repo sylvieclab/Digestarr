@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digestarr - Configuration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #e5a00d;
+            --primary-dark: #cc8f0c;
+            --secondary: #1a1a1a;
+            --background: #0f0f0f;
+            --surface: #1a1a1a;
+            --surface-light: #252525;
+            --text: #ffffff;
+            --text-secondary: #b0b0b0;
+            --success: #4caf50;
+            --error: #f44336;
+            --border: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 2px solid var(--primary);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge.healthy {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        .status-badge.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: var(--error);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .label-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--surface-light);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .alert-info {
+            background: rgba(229, 160, 13, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .code-block {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 4rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .schedule-examples {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .schedule-examples .example {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        .schedule-examples .example:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-examples .example code {
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>📬 Digestarr</h1>
+            <div class="status-badge healthy" id="status-badge">
+                <span class="status-dot"></span>
+                <span id="status-text">Healthy</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="alert-container"></div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-unprocessed">-</div>
+                <div class="stat-label">Unprocessed Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-next-run">-</div>
+                <div class="stat-label">Next Digest</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-version">v1.0.0</div>
+                <div class="stat-label">Version</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('config')">⚙️ Configuration</button>
+            <button class="tab" onclick="switchTab('schedule')">📅 Schedule</button>
+            <button class="tab" onclick="switchTab('test')">🧪 Testing</button>
+            <button class="tab" onclick="switchTab('logs')">📋 Logs</button>
+        </div>
+
+        <!-- Configuration Tab -->
+        <div id="config-tab" class="tab-content active">
+            <form id="config-form">
+                <!-- Plex Configuration -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Plex Configuration</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="plex_url">Plex Server URL</label>
+                        <input type="text" id="plex_url" name="plex_url" placeholder="http://10.10.20.200:32400">
+                        <div class="label-description">Your local Plex server address</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="plex_token">Plex Token (Optional)</label>
+                        <input type="text" id="plex_token" name="plex_token" placeholder="Your Plex authentication token">
+                        <div class="label-description">Required for thumbnails in Discord. Leave empty if not needed.</div>
+                    </div>
+                </div>
+
+                <!-- Discord Configuration -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Discord Configuration</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="discord_webhook_url">Discord Webhook URL *</label>
+                        <input type="text" id="discord_webhook_url" name="discord_webhook_url" placeholder="https://discord.com/api/webhooks/..." required>
+                        <div class="label-description">Get this from Discord: Channel Settings → Integrations → Webhooks</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discord_username">Bot Username</label>
+                        <input type="text" id="discord_username" name="discord_username" value="Digestarr">
+                        <div class="label-description">Display name for Discord messages</div>
+                    </div>
+                </div>
+
+                <!-- Feature Flags -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Media Types</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable_movies" name="enable_movies" checked>
+                            <label for="enable_movies">Enable Movies</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable_tv_shows" name="enable_tv_shows" checked>
+                            <label for="enable_tv_shows">Enable TV Shows</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable_music" name="enable_music" checked>
+                            <label for="enable_music">Enable Music</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">💾 Save Configuration</button>
+                    <button type="button" class="btn btn-secondary" onclick="loadConfig()">🔄 Reload</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Schedule Tab -->
+        <div id="schedule-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Digest Schedule</h2>
+                </div>
+
+                <div class="form-group">
+                    <label for="digest_schedule">Cron Schedule</label>
+                    <input type="text" id="digest_schedule" value="0 */6 * * *">
+                    <div class="label-description">Standard cron format: minute hour day month day_of_week</div>
+                    
+                    <div class="schedule-examples">
+                        <div class="example">
+                            <code>0 */6 * * *</code>
+                            <span>Every 6 hours</span>
+                        </div>
+                        <div class="example">
+                            <code>0 0 * * *</code>
+                            <span>Daily at midnight</span>
+                        </div>
+                        <div class="example">
+                            <code>0 8,20 * * *</code>
+                            <span>Daily at 8 AM and 8 PM</span>
+                        </div>
+                        <div class="example">
+                            <code>0 21 * * *</code>
+                            <span>Daily at 9 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="digest_threshold">Auto-Send Threshold</label>
+                    <input type="number" id="digest_threshold" value="0" min="0">
+                    <div class="label-description">Send digest immediately when this many items are queued (0 = disabled)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="timezone">Timezone</label>
+                    <select id="timezone">
+                        <option value="America/New_York">America/New_York (Eastern)</option>
+                        <option value="America/Chicago">America/Chicago (Central)</option>
+                        <option value="America/Denver">America/Denver (Mountain)</option>
+                        <option value="America/Los_Angeles">America/Los_Angeles (Pacific)</option>
+                        <option value="America/Toronto">America/Toronto</option>
+                        <option value="Europe/London">Europe/London</option>
+                        <option value="UTC">UTC</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="saveSchedule()">💾 Save Schedule</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Tab -->
+        <div id="test-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Test Digest</h2>
+                </div>
+
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                    Send a test digest to Discord with current unprocessed items. If no items are queued, nothing will be sent.
+                </p>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="sendTestDigest()">
+                        📤 Send Test Digest Now
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="testDiscordWebhook()">
+                        ✅ Test Discord Webhook
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Plex Webhook Setup</h2>
+                </div>
+
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                    Configure Plex to send webhooks to Digestarr:
+                </p>
+
+                <ol style="color: var(--text-secondary); margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                    <li style="margin-bottom: 0.5rem;">Open Plex Web App</li>
+                    <li style="margin-bottom: 0.5rem;">Go to Settings → Webhooks</li>
+                    <li style="margin-bottom: 0.5rem;">Click "Add Webhook"</li>
+                    <li style="margin-bottom: 0.5rem;">Enter this URL:</li>
+                </ol>
+
+                <div class="code-block" id="webhook-url">
+                    Loading...
+                </div>
+
+                <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                    💡 Tip: Use the "Test" button in Plex webhook settings to verify connectivity
+                </p>
+            </div>
+        </div>
+
+        <!-- Logs Tab -->
+        <div id="logs-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Logs</h2>
+                    <button type="button" class="btn btn-secondary" onclick="refreshLogs()">
+                        🔄 Refresh
+                    </button>
+                </div>
+
+                <div id="logs-container" style="background: var(--surface-light); border-radius: 8px; padding: 1rem; font-family: 'Courier New', monospace; font-size: 0.875rem; max-height: 500px; overflow-y: auto;">
+                    <div style="color: var(--text-secondary);">Logs not yet implemented. Check Docker logs with: docker logs digestarr</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Digestarr v1.0.0 - Part of the *arr family</p>
+        <p style="margin-top: 0.5rem;">Built for Montahulu+ with ❤️</p>
+    </footer>
+
+    <script>
+        // Global state
+        let currentConfig = {};
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+            loadStats();
+            loadWebhookUrl();
+            
+            // Refresh stats every 30 seconds
+            setInterval(loadStats, 30000);
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Load configuration
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                if (response.ok) {
+                    currentConfig = await response.json();
+                    populateForm(currentConfig);
+                }
+            } catch (error) {
+                showAlert('Failed to load configuration', 'error');
+            }
+        }
+
+        // Populate form with config
+        function populateForm(config) {
+            document.getElementById('plex_url').value = config.plex_url || '';
+            document.getElementById('plex_token').value = config.plex_token || '';
+            document.getElementById('discord_webhook_url').value = config.discord_webhook_url || '';
+            document.getElementById('discord_username').value = config.discord_username || 'Digestarr';
+            document.getElementById('enable_movies').checked = config.enable_movies !== false;
+            document.getElementById('enable_tv_shows').checked = config.enable_tv_shows !== false;
+            document.getElementById('enable_music').checked = config.enable_music !== false;
+            document.getElementById('digest_schedule').value = config.digest_schedule || '0 */6 * * *';
+            document.getElementById('digest_threshold').value = config.digest_threshold || 0;
+            document.getElementById('timezone').value = config.timezone || 'America/New_York';
+        }
+
+        // Save configuration
+        document.getElementById('config-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const config = {
+                plex_url: document.getElementById('plex_url').value,
+                plex_token: document.getElementById('plex_token').value,
+                discord_webhook_url: document.getElementById('discord_webhook_url').value,
+                discord_username: document.getElementById('discord_username').value,
+                enable_movies: document.getElementById('enable_movies').checked,
+                enable_tv_shows: document.getElementById('enable_tv_shows').checked,
+                enable_music: document.getElementById('enable_music').checked,
+            };
+
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                if (response.ok) {
+                    showAlert('Configuration saved successfully! Restart the container for changes to take effect.', 'success');
+                } else {
+                    const error = await response.json();
+                    showAlert('Failed to save: ' + (error.detail || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showAlert('Failed to save configuration', 'error');
+            }
+        });
+
+        // Save schedule
+        async function saveSchedule() {
+            const config = {
+                digest_schedule: document.getElementById('digest_schedule').value,
+                digest_threshold: parseInt(document.getElementById('digest_threshold').value),
+                timezone: document.getElementById('timezone').value
+            };
+
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                if (response.ok) {
+                    showAlert('Schedule saved! Restart container for changes to take effect.', 'success');
+                } else {
+                    showAlert('Failed to save schedule', 'error');
+                }
+            } catch (error) {
+                showAlert('Failed to save schedule', 'error');
+            }
+        }
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('stat-unprocessed').textContent = stats.unprocessed_items || 0;
+                    
+                    if (stats.next_run) {
+                        const nextRun = new Date(stats.next_run);
+                        const now = new Date();
+                        const diff = Math.floor((nextRun - now) / 1000 / 60); // minutes
+                        
+                        if (diff < 60) {
+                            document.getElementById('stat-next-run').textContent = diff + 'm';
+                        } else if (diff < 1440) {
+                            document.getElementById('stat-next-run').textContent = Math.floor(diff / 60) + 'h';
+                        } else {
+                            document.getElementById('stat-next-run').textContent = Math.floor(diff / 1440) + 'd';
+                        }
+                    }
+                }
+
+                const healthResponse = await fetch('/health');
+                if (healthResponse.ok) {
+                    document.getElementById('status-badge').className = 'status-badge healthy';
+                    document.getElementById('status-text').textContent = 'Healthy';
+                } else {
+                    document.getElementById('status-badge').className = 'status-badge error';
+                    document.getElementById('status-text').textContent = 'Error';
+                }
+            } catch (error) {
+                document.getElementById('status-badge').className = 'status-badge error';
+                document.getElementById('status-text').textContent = 'Offline';
+            }
+        }
+
+        // Load webhook URL
+        async function loadWebhookUrl() {
+            const hostname = window.location.hostname;
+            const port = window.location.port || '5667';
+            document.getElementById('webhook-url').textContent = `http://${hostname}:${port}/webhook`;
+        }
+
+        // Send test digest
+        async function sendTestDigest() {
+            showAlert('Sending test digest...', 'info');
+            
+            try {
+                const response = await fetch('/api/send-digest', { method: 'POST' });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert(result.message || 'Test digest sent successfully!', 'success');
+                } else {
+                    showAlert(result.detail || 'Failed to send test digest', 'error');
+                }
+            } catch (error) {
+                showAlert('Failed to send test digest', 'error');
+            }
+        }
+
+        // Test Discord webhook
+        async function testDiscordWebhook() {
+            showAlert('Sending test message to Discord...', 'info');
+            
+            try {
+                const response = await fetch('/api/test-discord', { method: 'POST' });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert('Test message sent to Discord!', 'success');
+                } else {
+                    showAlert(result.detail || 'Failed to send test message', 'error');
+                }
+            } catch (error) {
+                showAlert('Failed to send test message', 'error');
+            }
+        }
+
+        // Refresh logs (placeholder)
+        function refreshLogs() {
+            showAlert('Log viewing via web UI coming soon. Use: docker logs digestarr', 'info');
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
