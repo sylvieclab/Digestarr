@@ -18,7 +18,7 @@ class PlexWebhookPayload(BaseModel):
     owner: bool
     Account: dict
     Server: dict
-    Player: dict
+    Player: Optional[dict] = None  # Only present for playback events
     Metadata: dict
 
 

@@ -162,7 +162,11 @@ async def update_config(config: ConfigUpdate):
             if hasattr(settings, key):
                 setattr(settings, key, value)
         
-        return {"message": "Configuration updated successfully. Restart container for all changes to take effect."}
+        # Update Discord sender with new webhook URL
+        discord_sender.update_config()
+        logger.info("Discord sender configuration updated")
+        
+        return {"message": "Configuration updated successfully. Some changes may require container restart."}
     except Exception as e:
         logger.error(f"Failed to update configuration: {e}")
         raise HTTPException(status_code=500, detail=str(e))

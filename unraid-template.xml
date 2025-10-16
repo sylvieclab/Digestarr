@@ -11,7 +11,7 @@
   <Project>https://github.com/sylvieclab/Digestarr</Project>
   <Overview>Aggregate Plex webhook notifications into periodic Discord digests. Part of the *arr family.&#xD;
 &#xD;
-IMPORTANT: Configure your Plex server URL below, then complete setup via the Web UI at http://[IP]:5667&#xD;
+IMPORTANT: Configure your Plex server URL below, then complete setup via the Web UI at http://[IP]:[PORT:5667]&#xD;
 &#xD;
 Features:&#xD;
 - Smart media aggregation (TV shows by season, movies, music by artist)&#xD;
@@ -32,7 +32,7 @@ Features:&#xD;
   <DonateText/>
   <DonateLink/>
   <Requires/>
-  <Config Name="Web UI Port" Target="5667" Default="5667" Mode="tcp" Description="Port for Web UI and webhook receiver" Type="Port" Display="always" Required="true" Mask="false">5667</Config>
+  <Config Name="WebUI" Target="5667" Default="5667" Mode="tcp" Description="Web UI and webhook receiver port" Type="Port" Display="always" Required="true" Mask="false">5667</Config>
   <Config Name="AppData" Target="/data" Default="/mnt/user/appdata/digestarr" Mode="rw" Description="Configuration and database storage" Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/digestarr</Config>
   <Config Name="Plex URL" Target="PLEX_URL" Default="" Mode="" Description="Your Plex server URL (e.g., http://192.168.1.100:32400 or http://plex:32400)" Type="Variable" Display="always" Required="true" Mask="false">http://YOUR_PLEX_IP:32400</Config>
   <Config Name="Digest Schedule" Target="DIGEST_SCHEDULE" Default="0 */6 * * *" Mode="" Description="Cron schedule for digests (can be changed in Web UI)" Type="Variable" Display="always" Required="false" Mask="false">0 */6 * * *</Config>
