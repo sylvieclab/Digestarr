@@ -43,7 +43,17 @@ async def send_digest_now():
 
 def scheduled_digest_job():
     """Job function that wraps async send_digest_now for scheduler"""
-    asyncio.create_task(send_digest_now())
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # If loop is already running, create a task
+            asyncio.create_task(send_digest_now())
+        else:
+            # If no loop is running, run it directly
+            loop.run_until_complete(send_digest_now())
+    except RuntimeError:
+        # No event loop exists, create a new one
+        asyncio.run(send_digest_now())
 
 
 def start_scheduler():
