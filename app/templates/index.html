@@ -798,9 +798,44 @@
             }
         }
 
-        // Refresh logs (placeholder)
-        function refreshLogs() {
-            showAlert('Log viewing via web UI coming soon. Use: docker logs digestarr', 'info');
+        // Refresh logs
+        async function refreshLogs() {
+            try {
+                const response = await fetch('/api/logs?lines=500');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Render logs
+                    const container = document.getElementById('logs-container');
+                    if (data.logs.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">No logs available yet</div>';
+                    } else {
+                        container.innerHTML = data.logs.map(log => {
+                            return `
+                                <div style="padding: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <span style="color: var(--text-secondary); margin-right: 0.5rem;">${log.timestamp}</span>
+                                    <span style="font-weight: 600; margin-right: 0.5rem; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.7rem; background: rgba(255,255,255,0.1); color: ${log.level === 'ERROR' ? '#f44336' : log.level === 'WARNING' ? '#ff9800' : '#fff'};">${log.level}</span>
+                                    <span style="color: var(--text);">${escapeHtml(log.message)}</span>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        // Auto-scroll to bottom
+                        container.scrollTop = container.scrollHeight;
+                    }
+                } else {
+                    showAlert('Failed to load logs', 'error');
+                }
+            } catch (error) {
+                showAlert('Failed to load logs', 'error');
+            }
+        }
+
+        // Utility function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // Show alert
