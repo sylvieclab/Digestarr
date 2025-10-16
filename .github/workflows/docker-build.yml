@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_IMAGE: montahulu/digestarr
+  DOCKER_IMAGE: sylviecanuck/digestarr  # Updated to match your Docker Hub username
   
 jobs:
   build:

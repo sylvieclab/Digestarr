@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>Digestarr</Name>
-  <Repository>montahulu/digestarr:latest</Repository>
-  <Registry>https://hub.docker.com/r/montahulu/digestarr</Registry>
+  <Repository>sylviecanuck/digestarr:latest</Repository>
+  <Registry>https://hub.docker.com/r/sylviecanuck/digestarr</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/Montahulu/Digestarr</Support>
-  <Project>https://github.com/Montahulu/Digestarr</Project>
+  <Support>https://github.com/sylvieclab/Digestarr</Support>
+  <Project>https://github.com/sylvieclab/Digestarr</Project>
   <Overview>Aggregate Plex webhook notifications into periodic Discord digests. Part of the *arr family.&#xD;
 &#xD;
 IMPORTANT: Configure your Plex server URL below, then complete setup via the Web UI at http://[IP]:5667&#xD;
@@ -23,8 +23,8 @@ Features:&#xD;
 </Overview>
   <Category>MediaApp:Other</Category>
   <WebUI>http://[IP]:[PORT:5667]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/Montahulu/Digestarr/main/unraid-template.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/Montahulu/Digestarr/main/icon.png</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/sylvieclab/Digestarr/main/unraid-template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/sylvieclab/Digestarr/main/icon.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
