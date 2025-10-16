@@ -16,16 +16,9 @@ from app.webhook import router as webhook_router
 from app.scheduler import start_scheduler, stop_scheduler, get_next_run_time, send_digest_now
 from app.discord_sender import discord_sender
 from app.aggregator import MediaAggregator
+from app.logger import log_manager
 
-# Configure logging
-logging.basicConfig(
-    level=getattr(logging, settings.log_level.upper()),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout)
-    ]
-)
-
+# Logging is now configured by log_manager in logger.py
 logger = logging.getLogger(__name__)
 
 # Initialize aggregator
@@ -219,6 +212,173 @@ async def api_root():
         "version": settings.app_version,
         "status": "running"
     }
+
+
+@app.get("/api/logs")
+async def get_logs(lines: int = 500):
+    """Get recent log entries"""
+    try:
+        # Limit lines to prevent excessive data transfer
+        lines = min(lines, 1000)
+        logs = log_manager.get_recent_logs(lines=lines)
+        file_info = log_manager.get_log_file_info()
+        
+        return {
+            "logs": logs,
+            "file_info": file_info,
+            "count": len(logs)
+        }
+    except Exception as e:
+        logger.error(f"Failed to retrieve logs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/queue")
+async def get_queue():
+    """Get unprocessed media items in the queue"""
+    try:
+        items = aggregator.get_unprocessed_items()
+        
+        # Format items for display
+        formatted_items = []
+        for item in items:
+            formatted = {
+                'id': item['id'],
+                'media_type': item['media_type'],
+                'added_at': item['added_at'],
+            }
+            
+            # Format display text based on media type
+            if item['media_type'] == 'movie':
+                year_str = f" ({item['year']})" if item.get('year') else ""
+                formatted['display'] = f"{item['title']}{year_str}"
+            elif item['media_type'] == 'tv_show':
+                season = f"S{item['season_number']:02d}" if item.get('season_number') else "S??"
+                episode = f"E{item['episode_number']:02d}" if item.get('episode_number') else "E??"
+                formatted['display'] = f"{item['show_title']} {season}{episode}"
+                if item.get('title'):
+                    formatted['display'] += f" - {item['title']}"
+            elif item['media_type'] == 'music':
+                parts = []
+                if item.get('artist'):
+                    parts.append(item['artist'])
+                if item.get('album'):
+                    parts.append(item['album'])
+                if item.get('track_title'):
+                    parts.append(item['track_title'])
+                formatted['display'] = " - ".join(parts) if parts else item['title']
+            else:
+                formatted['display'] = item['title']
+            
+            formatted_items.append(formatted)
+        
+        # Group by media type
+        movies = [i for i in formatted_items if i['media_type'] == 'movie']
+        tv_shows = [i for i in formatted_items if i['media_type'] == 'tv_show']
+        music = [i for i in formatted_items if i['media_type'] == 'music']
+        
+        return {
+            "total_count": len(items),
+            "movies": movies,
+            "tv_shows": tv_shows,
+            "music": music,
+            "counts": {
+                "movies": len(movies),
+                "tv_shows": len(tv_shows),
+                "music": len(music)
+            }
+        }
+    except Exception as e:
+        logger.error(f"Failed to retrieve queue: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/validate-cron")
+async def validate_cron(cron_expression: dict):
+    """Validate a cron expression and return human-readable description"""
+    try:
+        from croniter import croniter
+        from datetime import datetime
+        
+        expression = cron_expression.get('expression', '')
+        
+        if not expression:
+            raise ValueError("No cron expression provided")
+        
+        # Validate cron expression
+        if not croniter.is_valid(expression):
+            raise ValueError("Invalid cron expression")
+        
+        # Get next 5 run times
+        base_time = datetime.now()
+        cron = croniter(expression, base_time)
+        next_runs = [cron.get_next(datetime).isoformat() for _ in range(5)]
+        
+        # Generate human-readable description (basic)
+        description = generate_cron_description(expression)
+        
+        return {
+            "valid": True,
+            "expression": expression,
+            "description": description,
+            "next_runs": next_runs
+        }
+    except Exception as e:
+        return {
+            "valid": False,
+            "error": str(e)
+        }
+
+
+def generate_cron_description(expression: str) -> str:
+    """Generate a human-readable description of a cron expression"""
+    parts = expression.split()
+    
+    if len(parts) != 5:
+        return "Custom schedule"
+    
+    minute, hour, day, month, dow = parts
+    
+    # Common patterns
+    if expression == "0 */6 * * *":
+        return "Every 6 hours"
+    elif expression == "0 0 * * *":
+        return "Daily at midnight"
+    elif expression == "0 12 * * *":
+        return "Daily at noon"
+    elif expression == "0 21 * * *":
+        return "Daily at 9 PM"
+    elif expression == "0 8,20 * * *":
+        return "Twice daily (8 AM and 8 PM)"
+    elif expression == "0 * * * *":
+        return "Every hour"
+    elif expression == "*/15 * * * *":
+        return "Every 15 minutes"
+    elif expression == "*/30 * * * *":
+        return "Every 30 minutes"
+    
+    # Generic descriptions
+    desc_parts = []
+    
+    if minute == "*":
+        desc_parts.append("every minute")
+    elif minute.startswith("*/"):
+        desc_parts.append(f"every {minute[2:]} minutes")
+    else:
+        desc_parts.append(f"at minute {minute}")
+    
+    if hour == "*":
+        if minute != "*":
+            desc_parts.append("every hour")
+    elif hour.startswith("*/"):
+        desc_parts.append(f"every {hour[2:]} hours")
+    elif "," in hour:
+        hours = hour.split(",")
+        desc_parts.append(f"at hours {hour}")
+    else:
+        desc_parts.append(f"at hour {hour}")
+    
+    return " ".join(desc_parts).capitalize()
 
 
 if __name__ == "__main__":
