@@ -42,11 +42,16 @@ async def plex_webhook(request: Request):
         
         # Check if metadata exists (some events don't have it)
         if not payload.Metadata:
-            logger.debug(f"No metadata in webhook, ignoring")
+            logger.debug(f"No metadata in webhook for event {payload.event}, ignoring")
             return {"status": "ignored", "reason": "no metadata"}
         
         # Extract metadata
         metadata = payload.Metadata
+        
+        # Log what type of media we received
+        media_type_received = metadata.get('type', 'unknown')
+        media_title = metadata.get('title', 'Unknown')
+        logger.info(f"Processing library.new webhook: type='{media_type_received}', title='{media_title}'")
         
         # Determine media type and create MediaItem
         media_item = None
@@ -116,7 +121,7 @@ async def plex_webhook(request: Request):
             # Log more details about what we're ignoring
             media_type = metadata.get('type')
             media_title = metadata.get('title', 'Unknown')
-            logger.debug(f"Ignoring media type '{media_type}': {media_title} (we only process movies, episodes, and tracks)")
+            logger.info(f"Ignoring media type '{media_type}': {media_title} (we only process movies, episodes, and tracks)")
             return {"status": "ignored", "reason": f"unsupported media type: {media_type}"}
     
     except Exception as e:
