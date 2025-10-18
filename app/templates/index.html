@@ -587,7 +587,16 @@
         <div id="logs-tab" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Recent Logs</h2>
+                    <div>
+                        <h2 class="card-title">Recent Logs</h2>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            <span id="logs-auto-refresh-indicator" style="display: none;">
+                                <span class="status-dot" style="width: 6px; height: 6px;"></span>
+                                Auto-refreshing every 10 seconds
+                            </span>
+                            <span id="logs-last-updated" style="margin-left: 1rem;"></span>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-secondary" onclick="refreshLogs()">
                         🔄 Refresh
                     </button>
@@ -608,6 +617,7 @@
     <script>
         // Global state
         let currentConfig = {};
+        let logsRefreshInterval = null;
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
@@ -631,7 +641,38 @@
 
             // Show selected tab
             document.getElementById(tabName + '-tab').classList.add('active');
-            event.target.classList.add('active');
+            
+            // Find and activate the corresponding tab button
+            const tabButtons = document.querySelectorAll('.tab');
+            tabButtons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(tabName.replace('-', ' '))) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Handle logs tab auto-loading and auto-refresh
+            if (tabName === 'logs') {
+                // Load logs immediately when tab opens
+                refreshLogs();
+                
+                // Start auto-refresh every 10 seconds
+                if (logsRefreshInterval) {
+                    clearInterval(logsRefreshInterval);
+                }
+                logsRefreshInterval = setInterval(refreshLogs, 10000);
+                
+                // Show auto-refresh indicator
+                document.getElementById('logs-auto-refresh-indicator').style.display = 'inline-flex';
+            } else {
+                // Stop auto-refresh when leaving logs tab
+                if (logsRefreshInterval) {
+                    clearInterval(logsRefreshInterval);
+                    logsRefreshInterval = null;
+                }
+                
+                // Hide auto-refresh indicator
+                document.getElementById('logs-auto-refresh-indicator').style.display = 'none';
+            }
         }
 
         // Load configuration
@@ -800,19 +841,27 @@
 
         // Refresh logs
         async function refreshLogs() {
+            const container = document.getElementById('logs-container');
+            const wasAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+            const isFirstLoad = !container.querySelector('.log-line');
+            
             try {
+                // Show loading state only on first load
+                if (isFirstLoad) {
+                    container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;"><span class="loading"></span> Loading logs...</div>';
+                }
+                
                 const response = await fetch('/api/logs?lines=500');
                 if (response.ok) {
                     const data = await response.json();
                     
                     // Render logs
-                    const container = document.getElementById('logs-container');
                     if (data.logs.length === 0) {
                         container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">No logs available yet</div>';
                     } else {
                         container.innerHTML = data.logs.map(log => {
                             return `
-                                <div style="padding: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <div class="log-line" style="padding: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                                     <span style="color: var(--text-secondary); margin-right: 0.5rem;">${log.timestamp}</span>
                                     <span style="font-weight: 600; margin-right: 0.5rem; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.7rem; background: rgba(255,255,255,0.1); color: ${log.level === 'ERROR' ? '#f44336' : log.level === 'WARNING' ? '#ff9800' : '#fff'};">${log.level}</span>
                                     <span style="color: var(--text);">${escapeHtml(log.message)}</span>
@@ -820,9 +869,16 @@
                             `;
                         }).join('');
                         
-                        // Auto-scroll to bottom
-                        container.scrollTop = container.scrollHeight;
+                        // Auto-scroll to bottom only if user was already at bottom (preserve scroll position)
+                        if (wasAtBottom) {
+                            container.scrollTop = container.scrollHeight;
+                        }
                     }
+                    
+                    // Update last updated timestamp
+                    const now = new Date();
+                    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    document.getElementById('logs-last-updated').textContent = `Last updated: ${timeStr}`;
                 } else {
                     showAlert('Failed to load logs', 'error');
                 }

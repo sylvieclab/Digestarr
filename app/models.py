@@ -19,7 +19,7 @@ class PlexWebhookPayload(BaseModel):
     Account: dict
     Server: dict
     Player: Optional[dict] = None  # Only present for playback events
-    Metadata: dict
+    Metadata: Optional[dict] = None  # Not present for all event types (e.g., admin.database)
 
 
 class MediaItem(BaseModel):

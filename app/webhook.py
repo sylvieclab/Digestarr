@@ -40,6 +40,11 @@ async def plex_webhook(request: Request):
             logger.debug(f"Ignoring event type: {payload.event}")
             return {"status": "ignored", "reason": "not a library.new event"}
         
+        # Check if metadata exists (some events don't have it)
+        if not payload.Metadata:
+            logger.debug(f"No metadata in webhook, ignoring")
+            return {"status": "ignored", "reason": "no metadata"}
+        
         # Extract metadata
         metadata = payload.Metadata
         

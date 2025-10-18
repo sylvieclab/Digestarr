@@ -92,6 +92,10 @@ def load_saved_config():
                 for key, value in config.items():
                     if hasattr(settings, key) and value is not None:
                         setattr(settings, key, value)
+                
+                # CRITICAL: Update discord_sender with new webhook URL
+                discord_sender.update_config()
+                logger.info("Discord sender configuration updated from saved config")
         except Exception as e:
             logger.error(f"Failed to load saved configuration: {e}")
 
