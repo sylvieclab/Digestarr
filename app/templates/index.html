@@ -489,9 +489,20 @@
                 <div class="form-group">
                     <label for="digest_schedule">Cron Schedule</label>
                     <input type="text" id="digest_schedule" value="0 */6 * * *">
-                    <div class="label-description">Standard cron format: minute hour day month day_of_week</div>
+                    <div class="label-description">
+                        Standard cron format: <code>minute hour day month day_of_week</code><br>
+                        💡 Tip: Use <code>*/N</code> for "every N" (e.g., <code>*/5</code> = every 5 minutes)
+                    </div>
                     
                     <div class="schedule-examples">
+                        <div class="example">
+                            <code>*/5 * * * *</code>
+                            <span>Every 5 minutes</span>
+                        </div>
+                        <div class="example">
+                            <code>*/15 * * * *</code>
+                            <span>Every 15 minutes</span>
+                        </div>
                         <div class="example">
                             <code>0 */6 * * *</code>
                             <span>Every 6 hours</span>

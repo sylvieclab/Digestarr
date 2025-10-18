@@ -90,6 +90,14 @@ async def plex_webhook(request: Request):
             # Add to aggregator
             aggregator.add_media_item(media_item)
             
+            # Log what we added
+            if media_item.media_type == MediaType.TV_SHOW:
+                logger.info(f"Added episode: {media_item.title}")
+            elif media_item.media_type == MediaType.MOVIE:
+                logger.info(f"Added movie: {media_item.title}")
+            elif media_item.media_type == MediaType.MUSIC:
+                logger.info(f"Added track: {media_item.title}")
+            
             # Check threshold for auto-send
             if settings.digest_threshold > 0:
                 unprocessed_count = aggregator.get_unprocessed_count()
@@ -105,8 +113,11 @@ async def plex_webhook(request: Request):
                 "title": media_item.title
             }
         else:
-            logger.warning(f"Unknown media type: {metadata.get('type')}")
-            return {"status": "ignored", "reason": "unknown media type"}
+            # Log more details about what we're ignoring
+            media_type = metadata.get('type')
+            media_title = metadata.get('title', 'Unknown')
+            logger.debug(f"Ignoring media type '{media_type}': {media_title} (we only process movies, episodes, and tracks)")
+            return {"status": "ignored", "reason": f"unsupported media type: {media_type}"}
     
     except Exception as e:
         logger.error(f"Error processing webhook: {str(e)}", exc_info=True)
